@@ -23,13 +23,13 @@ def render_column(col):
 	return ('%s_tree.%s' if col.spatial else '%s_data.%s') % (col.table, col.name)
 
 def render_target(targ):
-	if targ.col:
+	if targ.col is not None:
 		return render_column(targ.col)
-	elif targ.ival:
+	elif targ.ival is not None:
 		return '%d' % (targ.ival,)
-	elif targ.fval:
+	elif targ.fval is not None:
 		return '%s' % (targ.fval,)
-	elif targ.sval:
+	elif targ.sval is not None:
 		return '%s' % (targ.sval,)
 	elif targ.nullity is not None:
 		return 'NULL'
