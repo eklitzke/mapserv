@@ -14,7 +14,7 @@ struct Coord {
 }
 
 struct Cell {
-  1: i64 id,
+  1: optional i64 id,
   2: Coord pos,
   3: optional Timestamp timestamp,
   4: optional binary data
@@ -24,13 +24,13 @@ struct Query {
   1: Coord nw,
   2: Coord se,
   3: optional Timestamp start,
-  4: optional i32 limit,
-  5: optional Sort sortby
+  4: optional Sort sortby
+  5: optional i32 limit,
 }
 
 service GeoBoxService {
   i64 insert(1: Cell cell);
   void expunge(1: i64 id);
-  void update(1: Cell cell);
+  #void update(1: Cell cell);
   list<Cell> select(1: Query query);
 }
