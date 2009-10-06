@@ -2,7 +2,7 @@ from mapserv.interfaces.query import ttypes
 from mapserv.assertions import assert_not_reached
 
 def render_order(order):
-	if order == ttypes.Order.ASC:
+	if order == ttypes.Order.ASC or order is None:
 		return 'ASC'
 	elif order == ttypes.Order.DESC:
 		return 'DESC'

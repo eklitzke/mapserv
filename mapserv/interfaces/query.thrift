@@ -57,7 +57,7 @@ struct Comparison {
 
 struct OrderClause {
   1: Column col,
-  2: Order order
+  2: optional Order order
 }
 
 struct QueryClause {
