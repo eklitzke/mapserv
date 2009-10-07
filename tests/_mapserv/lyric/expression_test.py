@@ -14,12 +14,14 @@ class ExpressionTestCase(unittest.TestCase):
 		self.id_lt_100 = Comparison(eqcomp=EqComparison(lhs=Target(col=self.id_col), rhs=Target(ival=100), eq=Equality.LT))
 		self.id_is_null = Comparison(nullcomp=NullComparison(isnull=True, col=self.id_col))
 		self.id_not_null = Comparison(nullcomp=NullComparison(isnull=False, col=self.id_col))
+
+	def _make_query(self, **kwargs):
+		kw = {'clause': QueryClause(**kwargs), 'variety': self.VARIETY}
+		return Query(**kw)
 	
 class SelectTestCase(ExpressionTestCase):
 
-	def _make_query(self, **kwargs):
-		kw = {'clause': QueryClause(**kwargs), 'variety': QueryType.SELECT}
-		return Query(**kw)
+	VARIETY = QueryType.SELECT
 
 	def test_simple_select(self):
 		expected = self._make_query(exprs=(self.id_eq_100,))
@@ -52,7 +54,18 @@ class SelectTestCase(ExpressionTestCase):
 	def test_select_with_limit_and_offset(self):
 		expected = self._make_query(exprs=(self.id_not_null,), limit=5, offset=10)
 		self.assertEqual(select(self.table.c.id != None, limit=5, offset=10), expected)
+
+class DeleteTestCase(ExpressionTestCase):
+
+	VARIETY = QueryType.DELETE
+
+	def test_simple_delete(self):
+		expected = self._make_query(exprs=(self.id_eq_100,))
+		self.assertEqual(delete(self.table.c.id == 100), expected)
 	
+	def test_delete_with_limit(self):
+		expected = self._make_query(exprs=(self.id_eq_100,), limit=100)
+		self.assertEqual(delete(self.table.c.id == 100, limit=100), expected)
 
 if __name__ == '__main__':
 	unittest.main()
