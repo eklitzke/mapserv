@@ -75,7 +75,7 @@ enum QueryType {
 }
 
 struct Row {
-  1: optional string table_name,
+  1: string table_name,
   2: map<string,Target> columns
 }
 
