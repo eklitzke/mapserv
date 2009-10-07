@@ -95,4 +95,12 @@ def render_select(q):
 
     return ' '.join(query)
 
-__all__ = ['render_select']
+def render_insert(table_name, colnames, spatial):
+    if spatial and 'id' not in colnames:
+        raise ValueError('Must provide an `id` column for spatial inserts')
+    if not spatial and 'id' in colnames:
+        raise ValueError('Cannot provide an `id` column for non-spatial inserts')
+    qs = ', '.join('?' for x in range(len(colnames)))
+    return 'INSERT INTO %s (%s) VALUES (%s)' % (render_table(table_name, spatial), ', '.join(colnames), qs)
+
+__all__ = ['render_select', 'render_insert']
