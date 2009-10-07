@@ -1,5 +1,6 @@
 import unittest
 from mapserv.lyric.table import Table
+from mapserv.query.util import make_target
 from mapserv.lyric.expression import *
 from mapserv.interfaces.query.ttypes import *
 
@@ -66,6 +67,28 @@ class DeleteTestCase(ExpressionTestCase):
 	def test_delete_with_limit(self):
 		expected = self._make_query(exprs=(self.id_eq_100,), limit=100)
 		self.assertEqual(delete(self.table.c.id == 100, limit=100), expected)
+
+class InsertTestCase(ExpressionTestCase):
+
+	def setUp(self):
+		super(InsertTestCase, self).setUp()
+		self.lat = 37.813369
+		self.lng = -122.276866
+
+	def _make_insert(self, **kwargs):
+		kw = dict((k, make_target(v)) for k, v in kwargs.iteritems())
+		row = Row(table_name='test_table', columns=kw)
+		return Query(variety=QueryType.INSERT, insert_row=row)
+
+	def test_insert(self):
+		expected = self._make_insert(lat=self.lat, lng=self.lng)
+		self.assertEqual(insert(self.table, lat=self.lat, lng=self.lng), expected)
+	
+	def test_insert_no_cols(self):
+		self.assertRaises(ValueError, insert, self.table)
+	
+	def test_insert_with_id_column(self):
+		self.assertRaises(ValueError, lambda: insert(self.table, id=100, lat=self.lat, lng=self.lng))
 
 if __name__ == '__main__':
 	unittest.main()

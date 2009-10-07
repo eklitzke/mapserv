@@ -26,10 +26,10 @@ def select(*args, **kwargs):
 	clause = make_clause(args, orderby=kwargs.get('orderby'), limit=kwargs.get('limit'), offset=kwargs.get('offset'))
 	return ttypes.Query(variety=ttypes.QueryType.SELECT, clause=clause)
 
-@restrict_kw('limit')
-def update(*args, **kwargs):
-	clause = make_clause(args, limit=kwargs.get('limit'))
-	return ttypes.Query(variety=ttypes.QueryType.UPDATE, clause=clause)
+#@restrict_kw('limit')
+#def update(*args, **kwargs):
+#	clause = make_clause(args, limit=kwargs.get('limit'))
+#	return ttypes.Query(variety=ttypes.QueryType.UPDATE, clause=clause)
 
 @restrict_kw('limit')
 def delete(*args, **kwargs):
@@ -37,6 +37,10 @@ def delete(*args, **kwargs):
 	return ttypes.Query(variety=ttypes.QueryType.DELETE, clause=clause)
 
 def insert(table, **kwargs):
+	if not kwargs:
+		raise ValueError('Must specify at least one value for an insert')
+	if 'id' in kwargs:
+		raise ValueError('Illegal to specify an `id` in an insert')
 	columns = dict((k, mapserv.query.util.make_target(v)) for k, v in kwargs.iteritems())
 	row = ttypes.Row(table_name=table.name, columns=columns)
 	return ttypes.Query(variety=ttypes.QueryType.INSERT, insert_row=row)

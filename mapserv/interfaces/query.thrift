@@ -69,10 +69,9 @@ struct QueryClause {
 }
 
 enum QueryType {
-  SELECT = 1,
-  UPDATE = 2,
-  INSERT = 3,
-  DELETE = 4
+  INSERT = 1,
+  SELECT = 2,
+  DELETE = 3,
 }
 
 struct Row {
