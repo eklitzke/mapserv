@@ -6,7 +6,9 @@ def make_column(colname, spatial=False):
 	return ttypes.Column(table=table, name=name, spatial=spatial)
 
 def make_target(t):
-	if isinstance(t, ttypes.Column):
+	if hasattr(t, 'make_target'):
+		return t.make_target()
+	elif isinstance(t, ttypes.Column):
 		return ttypes.Target(col=t)
 	elif isinstance(t, (int, long)):
 		return ttypes.Target(ival=t)

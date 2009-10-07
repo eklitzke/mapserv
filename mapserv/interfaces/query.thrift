@@ -24,11 +24,12 @@ struct Column {
 
 // N.B. this is a union type
 struct Target {
-  1: optional Column col,      // logical targets
+  1: optional Column col,  // logical targets
   2: optional i64 ival,    // literal targets
   3: optional double fval,
   4: optional string sval,
-  5: optional bool nullity
+  5: optional binary bval,
+  6: optional bool nullity
 }
 
 struct EqComparison {
@@ -61,9 +62,26 @@ struct OrderClause {
 }
 
 struct QueryClause {
-  1: string table,
-  2: list<Comparison> exprs,
-  3: list<OrderClause> orderby,
-  4: optional i32 offset,
-  5: optional i32 limit
+  1: list<Comparison> exprs,
+  2: list<OrderClause> orderby,
+  3: optional i32 offset,
+  4: optional i32 limit
+}
+
+enum QueryType {
+  SELECT = 1,
+  UPDATE = 2,
+  INSERT = 3,
+  DELETE = 4
+}
+
+struct Row {
+  1: optional string table_name,
+  2: map<string,Target> columns
+}
+
+struct Query {
+  1: QueryType variety,
+  2: optional QueryClause clause,
+  3: optional Row insert_row
 }
