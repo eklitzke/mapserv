@@ -88,3 +88,5 @@ class Table(object):
 
         # Makes spatial columns
         self.s = ColumnMaker(self.name, True)
+
+__all__ = ['Table']

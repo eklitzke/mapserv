@@ -44,3 +44,5 @@ def insert(table, **kwargs):
     columns = dict((k, mapserv.query.util.make_target(v)) for k, v in kwargs.iteritems())
     row = ttypes.Row(table_name=table.name, columns=columns)
     return ttypes.Query(variety=ttypes.QueryType.INSERT, insert_row=row)
+
+__all__ = ['select', 'delete', 'insert']
