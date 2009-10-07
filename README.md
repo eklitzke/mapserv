@@ -35,8 +35,8 @@ This project is in a pre-alpha phase. Here's what's currently implemented:
 * A prototype of the thrift query spec (see `query.thrift`). This is still
   actively being modified. Note: Some SQLite-isms may have bled through into the
   query spec.
-* The Python query DSL is usable (however, only `UPDATE` statements have not yet
-  been implemented).
+* The Python query DSL is usable (however, `UPDATE` statements have not yet been
+  implemented).
 * There is no server implementation yet.
 
 Hacking
@@ -44,3 +44,7 @@ Hacking
 
 If you want to hack on this project, it lives on GitHub at
 [http://github.com/eklitzke/mapserv](http://github.com/eklitzke/mapserv).
+
+There are some tests in the aptly named `tests` directory. You can run all of
+the tests by running `make tests` (although they're run in a sort of strange
+way, since each test file is run separately).

@@ -1,10 +1,14 @@
+all_tests = $(shell find . -name '*_test.py' -print)
+
 mapserv/interfaces:
 	make -C mapserv/interfaces
 
-tests:
-	PYTHONPATH=$$PWD:$$PYTHONPATH make -C tests
+$(all_tests) :
+	PYTHONPATH=$$PWD:$$PYTHONPATH python $@
+
+tests: $(all_tests)
 
 clean:
 	find . -name '*.py[co]' -delete
 
-.PHONY: mapserv/interfaces tests
+.PHONY: mapserv/interfaces tests $(all_tests)
