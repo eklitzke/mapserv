@@ -1,12 +1,10 @@
 from mapserv.assertions import assert_not_reached
 from mapserv.interfaces.query import ttypes
 
-def make_column(colname, spatial=False):
-	table, name = colname.split('.')
-	return ttypes.Column(table=table, name=name, spatial=spatial)
-
 def make_target(t):
-	if hasattr(t, 'make_target'):
+	if isinstance(t, ttypes.Target):
+		return t
+	elif hasattr(t, 'make_target'):
 		return t.make_target()
 	elif isinstance(t, ttypes.Column):
 		return ttypes.Target(col=t)
@@ -28,3 +26,9 @@ def make_comp(comparator):
 	elif isinstance(comparator, ttypes.InComparison):
 		return ttypes.comparator(incomp=comparator)
 	assert_not_reached('make_comp invalid comparator: %r' % (comparator,))
+
+def make_orderby(order, ordering=None):
+	if isinstance(order, ttypes.OrderClause):
+		return order
+	elif hasattr(order, 'make_orderby'):
+		return order.make_orderby(ordering=ordering)

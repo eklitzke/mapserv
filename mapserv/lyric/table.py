@@ -12,6 +12,16 @@ class PseudoColumn(object):
 		col = ttypes.Column(table=self.table, name=self.name, spatial=self.spatial)
 		return ttypes.Target(col=col)
 
+	def make_orderby(self, ordering=None):
+		col = ttypes.Column(table=self.table, name=self.name, spatial=self.spatial)
+		return ttypes.OrderClause(col=col, order=ordering)
+
+	def asc(self):
+		return self.make_orderby(ttypes.Order.ASC)
+
+	def desc(self):
+		return self.make_orderby(ttypes.Order.DESC)
+
 	def compare_to(self, other, eq):
 		lhs = self.make_target()
 		rhs = mapserv.query.util.make_target(other)

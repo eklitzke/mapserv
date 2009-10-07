@@ -11,9 +11,9 @@ def make_clause(exprs, orderby=None, limit=None, offset=None):
 	kwargs = {'exprs': exprs}
 	if orderby is not None:
 		if isinstance(orderby, (list, tuple)):
-			kwargs['orderby'] = list(orderby)
+			kwargs['orderby'] = [mapserv.query.util.make_orderby(o) for o in orderby]
 		else:
-			kwargs['orderby'] = [orderby]
+			kwargs['orderby'] = [mapserv.query.util.make_orderby(orderby)]
 	if limit is not None:
 		kwargs['limit'] = limit
 		if offset:
