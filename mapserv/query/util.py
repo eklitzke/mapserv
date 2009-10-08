@@ -32,3 +32,16 @@ def make_orderby(order, ordering=None):
         return order
     elif hasattr(order, 'make_orderby'):
         return order.make_orderby(ordering=ordering)
+
+def make_val(t):
+    if type(t) is not ttypes.Target:
+        raise ValueError, 'Unexpected target: %r' % (t)
+
+    if t.ival is not None:
+        return t.ival
+    elif t.fval is not None:
+        return t.fval
+    elif t.sval is not None:
+        return t.val
+    elif t.nullity is not None:
+        return None

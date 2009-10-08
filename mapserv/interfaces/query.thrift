@@ -17,7 +17,7 @@ enum Equality {
 }
 
 struct Column {
-  1: string table,
+  1: optional string table,
   2: string name,
   3: bool spatial
 }
@@ -74,13 +74,22 @@ enum QueryType {
   DELETE = 3,
 }
 
+struct FloatBounds {
+  1: double lo,
+  2: double hi
+}
+
 struct Row {
   1: string table_name,
-  2: map<string,Target> columns
+  2: map<Column,Target> columns
 }
 
 struct Query {
   1: QueryType variety,
   2: optional QueryClause clause,
   3: optional Row insert_row
+}
+
+service QueryService {
+  i64 insert(1: Row row)
 }

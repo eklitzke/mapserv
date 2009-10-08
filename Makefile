@@ -1,4 +1,4 @@
-all_tests = $(shell find . -name '*_test.py' -print)
+all_tests = $(shell find tests/_mapserv -name '*_test.py' -print)
 
 mapserv/interfaces:
 	make -C mapserv/interfaces
