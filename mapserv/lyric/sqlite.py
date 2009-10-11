@@ -106,3 +106,5 @@ def existing_table_names(conn):
         table_name, = row
         table_names.add(str(table_name.rsplit('_', 1)[0]))
     return list(table_names)
+
+__all__ = ['rwtrans', 'rotrans', 'create', 'drop', 'insert', 'existing_table_names']

@@ -1,6 +1,6 @@
 from mapserv.interfaces.query import ttypes
 from mapserv.assertions import assert_not_reached
-from mapserv.thrift.introspection import walk_thrift
+from mapserv._thrift.introspection import walk_thrift
 
 def render_table(table_name, spatial):
     return table_name + ('_tree' if spatial else '_data')

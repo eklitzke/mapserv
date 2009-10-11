@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+
+import sqlite3
+from thrift.transport import TSocket, TTransport
+from thrift.protocol import TBinaryProtocol
+from thrift.server import TServer
+from mapserv import lyric
+from mapserv.interfaces.query import QueryService
+
+class MapservHandler(object):
+
+    def __init__(self):
+        self.conn = sqlite3.connect(':memory:')
+    
+    def create(self, name, cols):
+        lyric.create(self.conn, name, cols)
+
+    def existing_tables(self):
+        return lyric.existing_table_names(self.conn)
+
+    def insert(self, row):
+        pass
+
+def main(port=9090):
+    server = TServer.TSimpleServer(QueryService.Processor(MapservHandler()),
+                                   TSocket.TServerSocket(port),
+                                   TTransport.TBufferedTransportFactory(),
+                                   TBinaryProtocol.TBinaryProtocolFactory())
+    server.serve()
+
+if __name__ == '__main__':
+    main()
