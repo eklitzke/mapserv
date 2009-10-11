@@ -9,7 +9,7 @@ class RenderSelectTestCase(unittest.TestCase):
 
     def setUp(self):
         super(RenderSelectTestCase, self).setUp()
-        self.table = Table('render_test')
+        self.table = Table.ref('render_test')
         self.cols_no_id = ['lng', 'lat']
         self.cols_with_id = ['id'] + self.cols_no_id
 

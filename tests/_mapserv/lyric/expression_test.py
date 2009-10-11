@@ -8,7 +8,7 @@ class ExpressionTestCase(unittest.TestCase):
 
     def setUp(self):
         super(ExpressionTestCase, self).setUp()
-        self.table = Table('test_table')
+        self.table = Table.ref('test_table')
 
         self.id_col = Column(table='test_table', name='id', spatial=False)
         self.id_eq_100 = Comparison(eqcomp=EqComparison(lhs=Target(col=self.id_col), rhs=Target(ival=100), eq=Equality.EQ))

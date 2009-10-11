@@ -1,3 +1,6 @@
+import threading
+import weakref
+
 from mapserv.interfaces.query import ttypes
 import mapserv.query.util
 
@@ -77,9 +80,15 @@ class ColumnMaker(object):
     def __getattr__(self, name):
         return PseudoColumn(self.table, name, self.spatial)
 
+
 class Table(object):
 
+    #_table_cache = weakref.WeakValueDictionary()
+    _table_cache = {}
+    _table_cache_lock = threading.Lock()
+
     def __init__(self, name):
+        assert self.__class__._table_cache_lock.locked(), "Create new references using Table.ref()"
 
         self.name = name
 
@@ -88,5 +97,11 @@ class Table(object):
 
         # Makes spatial columns
         self.s = ColumnMaker(self.name, True)
+
+    @classmethod
+    def ref(cls, table_name):
+        with cls._table_cache_lock:
+            cls._table_cache.setdefault(table_name, cls(table_name))
+            return cls._table_cache[table_name]
 
 __all__ = ['Table']
