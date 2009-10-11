@@ -12,12 +12,15 @@ class TestRun(object):
 
     def create_table(self):
         col_defs = [CreateColumn(name='timestamp', type=ColumnType.INTEGER),
-                    CreateColumn(name='latitude', type=ColumnType.SPATIAL),
-                    CreateColumn(name='longitude', type=ColumnType.SPATIAL)]
-        return self.client.create(self.table_name, col_defs)
+                    CreateColumn(name='lat', type=ColumnType.SPATIAL),
+                    CreateColumn(name='lng', type=ColumnType.SPATIAL)]
+        self.client.create(self.table_name, col_defs)
 
     def drop_table(self):
         self.client.drop(self.table_name)
+    
+    def insert_row(self, timestamp, lat, lng):
+        pass
 
     def run(self):
         self.create_table()

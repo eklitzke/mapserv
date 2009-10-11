@@ -87,7 +87,7 @@ def existing_table_names(conn):
 
 def insert(conn, row):
     """Insert a row into SQLite"""
-    assert isinstance(ttypes.Row, row)
+    assert isinstance(row, ttypes.Row)
     data_names, data_vals = [], []
     spatial_names, spatial_vals = [], []
     for col, target in row.columns.iteritems():
@@ -109,6 +109,10 @@ def insert(conn, row):
     return row_id
 
 def select(conn, query):
-    pass
+    sql_query = render_select(query)
+    print sql_query
+    with rotrans(conn) as cursor:
+        conn.execute(sql_query)
+        return cursor.fetchall()
 
 __all__ = ['rwtrans', 'rotrans', 'create', 'drop', 'existing_table_names', 'insert', 'select']

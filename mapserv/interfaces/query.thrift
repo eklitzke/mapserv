@@ -62,11 +62,20 @@ struct InComparison {
   3: optional bool notin
 }
 
+// This is a hack, but it simplifies certain things a lot
+struct BetweenComparison {
+  1: Column col,
+  2: Target lo,
+  3: Target hi,
+  3: optional inclusive
+}
+
 // N.B. this is a union type
 struct Comparison {
   1: optional EqComparison eqcomp,
   2: optional NullComparison nullcomp,
-  3: optional InComparison incomp
+  3: optional InComparison incomp,
+  4: optional BetweenComparison betweencomp
 }
 
 struct OrderClause {

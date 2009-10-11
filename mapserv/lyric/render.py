@@ -1,5 +1,6 @@
 from mapserv.interfaces.query import ttypes
 from mapserv.assertions import assert_not_reached
+from mapserv.lyric.util import flatten_exprs
 from mapserv._thrift.introspection import walk_thrift
 
 def render_table(table_name, spatial):
@@ -69,7 +70,8 @@ def render_select(q):
     assert isinstance(q, ttypes.QueryClause)
 
     cols = []
-    for expr in q.exprs:
+    exprs = flatten_exprs(q.exprs)
+    for expr in exprs:
         cols.extend(obj for obj in walk_thrift(expr) if isinstance(obj, ttypes.Column))
     assert cols, 'No expresions included columns!'
     tbls = set(col.table for col in cols if col.table)
@@ -82,7 +84,7 @@ def render_select(q):
              'INNER JOIN %(tree_table)s ON %(data_table)s.id = %(tree_table)s.id',
              'WHERE']
     query = [' '.join(query) % {'data_table': data_table, 'tree_table': tree_table}]
-    query.append(' AND '.join(render_comparison(expr) for expr in q.exprs))
+    query.append(' AND '.join(render_comparison(expr) for expr in exprs))
 
     if q.orderby:
         query.append(render_orderby(q.orderby))

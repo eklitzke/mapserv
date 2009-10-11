@@ -4,13 +4,18 @@ import weakref
 from mapserv.interfaces.query import ttypes
 import mapserv.query.util
 
+class AndExpr(object):
+    """Logically group a series of expressions by AND."""
+    def __init__(self, *terms):
+        self.terms = terms
+
 class PseudoColumn(object):
 
     def __init__(self, table, name, spatial):
         self.table = table
         self.name = name
         self.spatial = spatial
-
+    
     def make_target(self):
         col = ttypes.Column(table=self.table, name=self.name, spatial=self.spatial)
         return ttypes.Target(col=col)
@@ -71,15 +76,66 @@ class PseudoColumn(object):
         return self.make_in_comparison(others, True)
     notin_ = notin
 
+class PseudoDataColumn(PseudoColumn):
+
+    def __init__(self, table, name):
+        super(PseudoDataColumn, self).__init__(table, name, spatial=False)
+
+class PseudoSpatialColumn(PseudoColumn):
+
+    def __init__(self, table, name):
+        self.table = table
+        self.name = name
+
+    def make_cols(self):
+        lo = PseudoColumn(self.table, self.name + '_lo', spatial=True)
+        hi = PseudoColumn(self.table, self.name + '_hi', spatial=True)
+        return lo, hi
+
+    def __eq__(self, other):
+        lo, hi = self.make_cols()
+        return AndExpr(lo == other, hi == other)
+
+    def __ne__(self, other):
+        lo, hi = self.make_cols()
+        return AndExpr(lo != other, hi != other)
+
+    def __le__(self, other):
+        raise NotImplementedError('__le__ Invalid for spatial columns')
+
+    def __lt__(self, other):
+        raise NotImplementedError('__lt__ Invalid for spatial columns')
+
+    def __gt__(self, other):
+        raise NotImplementedError('__gt__ Invalid for spatial columns')
+
+    def __ge__(self, other):
+        raise NotImplementedError('__ge__ Invalid for spatial columns')
+
+    def between(self, lo_val, hi_val, inclusive=True):
+        assert lo_val <= hi_val
+        lo, hi = self.make_cols()
+        if inclusive:
+            return AndExpr(lo >= lo_val, hi <= hi_val)
+        else:
+            return AndExpr(lo > lo_val, hi < hi_val)
+
 class ColumnMaker(object):
 
-    def __init__(self, table, spatial):
+    PSEUDO_CLS = None
+
+    def __init__(self, table):
         self.table = table
-        self.spatial = spatial
-
+    
     def __getattr__(self, name):
-        return PseudoColumn(self.table, name, self.spatial)
+        return self.PSEUDO_CLS(self.table, name)
 
+class DataColumnMaker(ColumnMaker):
+    PSEUDO_CLS = PseudoDataColumn
+
+class SpatialColumnMaker(ColumnMaker):
+    PSEUDO_CLS = PseudoSpatialColumn
+    
 class Table(object):
 
     #_table_cache = weakref.WeakValueDictionary()
@@ -92,10 +148,10 @@ class Table(object):
         self.name = name
 
         # Makes normal, "data" columns
-        self.c = ColumnMaker(self.name, False)
+        self.c = DataColumnMaker(self.name)
 
         # Makes spatial columns
-        self.s = ColumnMaker(self.name, True)
+        self.s = SpatialColumnMaker(self.name)
 
     @classmethod
     def ref(cls, table_name):

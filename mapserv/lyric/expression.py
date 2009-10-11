@@ -1,10 +1,12 @@
 import mapserv.query.util
 from mapserv.interfaces.query import ttypes
 from mapserv.decorators import restrict_kw
+from mapserv.lyric.util import flatten_exprs
 
 def make_clause(exprs, orderby=None, limit=None, offset=None):
     """Make the WHERE/ORDER BY/LIMIT part of a SELECT, UPDATE, or DELETE query.
     """
+    exprs = flatten_exprs(exprs)
     assert exprs, 'Must supply exprs to make_clause! (got: %r)' % (exprs,)
     assert all(isinstance(expr, ttypes.Comparison) for expr in exprs)
 

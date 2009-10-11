@@ -25,35 +25,35 @@ class SelectTestCase(ExpressionTestCase):
     VARIETY = QueryType.SELECT
 
     def test_simple_select(self):
-        expected = self._make_query(exprs=(self.id_eq_100,))
+        expected = self._make_query(exprs=[self.id_eq_100])
         self.assertEqual(select(self.table.c.id == 100), expected)
 
     def test_select_with_null_comp(self):
-        expected = self._make_query(exprs=(self.id_is_null,))
+        expected = self._make_query(exprs=[self.id_is_null])
         self.assertEqual(select(self.table.c.id == None), expected)
 
     def test_select_with_not_null_comp(self):
-        expected = self._make_query(exprs=(self.id_not_null,))
+        expected = self._make_query(exprs=[self.id_not_null])
         self.assertEqual(select(self.table.c.id != None), expected)
 
     def test_select_multiple_exprs(self):
-        expected = self._make_query(exprs=(self.id_lt_100, self.id_not_null))
+        expected = self._make_query(exprs=[self.id_lt_100, self.id_not_null])
         self.assertEqual(select(self.table.c.id < 100, self.table.c.id != None), expected)
 
     def test_select_with_single_orderby(self):
-        expected = self._make_query(exprs=(self.id_lt_100,), orderby=[OrderClause(col=self.id_col)])
+        expected = self._make_query(exprs=[self.id_lt_100], orderby=[OrderClause(col=self.id_col)])
         self.assertEqual(select(self.table.c.id < 100, orderby=self.table.c.id), expected)
 
     def test_select_with_multi_orderby(self):
-        expected = self._make_query(exprs=(self.id_lt_100,), orderby=[OrderClause(col=self.id_col), OrderClause(col=self.id_col, order=Order.DESC)])
+        expected = self._make_query(exprs=[self.id_lt_100], orderby=[OrderClause(col=self.id_col), OrderClause(col=self.id_col, order=Order.DESC)])
         self.assertEqual(select(self.table.c.id < 100, orderby=[self.table.c.id, self.table.c.id.desc()]), expected)
 
     def test_select_with_limit(self):
-        expected = self._make_query(exprs=(self.id_not_null,), limit=5)
+        expected = self._make_query(exprs=[self.id_not_null], limit=5)
         self.assertEqual(select(self.table.c.id != None, limit=5), expected)
 
     def test_select_with_limit_and_offset(self):
-        expected = self._make_query(exprs=(self.id_not_null,), limit=5, offset=10)
+        expected = self._make_query(exprs=[self.id_not_null], limit=5, offset=10)
         self.assertEqual(select(self.table.c.id != None, limit=5, offset=10), expected)
 
 class DeleteTestCase(ExpressionTestCase):
@@ -61,11 +61,11 @@ class DeleteTestCase(ExpressionTestCase):
     VARIETY = QueryType.DELETE
 
     def test_simple_delete(self):
-        expected = self._make_query(exprs=(self.id_eq_100,))
+        expected = self._make_query(exprs=[self.id_eq_100])
         self.assertEqual(delete(self.table.c.id == 100), expected)
 
     def test_delete_with_limit(self):
-        expected = self._make_query(exprs=(self.id_eq_100,), limit=100)
+        expected = self._make_query(exprs=[self.id_eq_100], limit=100)
         self.assertEqual(delete(self.table.c.id == 100, limit=100), expected)
 
 class InsertTestCase(ExpressionTestCase):
