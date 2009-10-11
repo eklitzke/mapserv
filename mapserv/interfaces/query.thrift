@@ -22,6 +22,19 @@ struct Column {
   3: bool spatial
 }
 
+enum ColumnType {
+  INTEGER = 1,
+  REAL = 2,
+  TEXT = 3,
+  BLOB = 4
+  SPATIAL = 5,
+}
+
+struct CreateColumn {
+  1: string name,
+  2: ColumnType type
+}
+
 // N.B. this is a union type
 struct Target {
   1: optional Column col,  // logical targets

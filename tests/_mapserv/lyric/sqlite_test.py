@@ -1,4 +1,5 @@
 import unittest
+import random
 from tests import sqlite_test
 from mapserv.lyric import *
 from mapserv.interfaces.query.ttypes import *
@@ -27,6 +28,18 @@ class SqliteLyricTest(sqlite_test.SqliteTest):
             self.assertEqual(cursor.fetchone(), (1,))
 
     def test_existing_table_names(self):
+        assert self.table_name in existing_table_names(self.conn)
+
+class SqliteCreateTableTest(sqlite_test.SqliteTest):
+
+    def setUp(self):
+        super(SqliteCreateTableTest, self).setUp()
+        self.table_name = 'test_' + ''.join(random.choice('abcdef') for x in range(10))
+
+    def test_create(self):
+        col_types = [CreateColumn(name='timestamp', type=ColumnType.INTEGER),
+                     CreateColumn(name='latitude', type=ColumnType.SPATIAL)]
+        create(self.conn, self.table_name, col_types)
         assert self.table_name in existing_table_names(self.conn)
 
 if __name__ == '__main__':

@@ -1,6 +1,8 @@
 import sqlite3
 from mapserv.query.util import make_val
 from mapserv.lyric.render import *
+from mapserv.interfaces.query import ttypes
+from mapserv.lyric.table import Table
 
 class SqliteContext(object):
 
@@ -60,6 +62,38 @@ def insert(conn, row):
         cursor.execute(spatial_insert, [row_id] + spatial_vals)
     return row_id
 
+def create(conn, name, columns):
+
+    data_columns = ['id INTEGER PRIMARY KEY']
+    spatial_columns = ['id']
+
+    for col in columns:
+        for coltype in ['INTEGER', 'REAL', 'TEXT', 'BLOB']:
+            if col.type == getattr(ttypes.ColumnType, coltype):
+                data_columns.append('%s %s' % (col.name, coltype))
+                break
+        else:
+            assert col.type == ttypes.ColumnType.SPATIAL
+            spatial_columns.append(col.name)
+
+    with rwtrans(conn) as cursor:
+        cursor.execute('CREATE TABLE %s_data (%s)' % (name, ', '.join(data_columns)))
+        cursor.execute('CREATE TABLE %s_tree (%s)' % (name, ', '.join(spatial_columns)))
+    
+    return Table.ref(name)
+
+def drop(conn, name, if_exists=True):
+
+    def _drop(cursor, table_name):
+        if if_exists:
+            cursor.execute('DROP TABLE IF EXISTS %s' % table_name)
+        else:
+            cursor.execute('DROP TABLE %s' % table_name)
+
+    with rwtrans(conn) as cursor:
+        _drop(cursor, name + '_data')
+        _drop(cursor, name + '_tree')
+
 def existing_table_names(conn):
     with rotrans(conn) as cursor:
         cursor.execute('SELECT name FROM sqlite_master '
@@ -70,5 +104,5 @@ def existing_table_names(conn):
     table_names = set()
     for row in rows:
         table_name, = row
-        table_names.add(table_name.split('_', 1)[0])
+        table_names.add(str(table_name.rsplit('_', 1)[0]))
     return list(table_names)
