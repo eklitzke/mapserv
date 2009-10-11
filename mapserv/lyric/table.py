@@ -80,7 +80,6 @@ class ColumnMaker(object):
     def __getattr__(self, name):
         return PseudoColumn(self.table, name, self.spatial)
 
-
 class Table(object):
 
     #_table_cache = weakref.WeakValueDictionary()
@@ -92,7 +91,7 @@ class Table(object):
 
         self.name = name
 
-        # Makes norma, "data" columns
+        # Makes normal, "data" columns
         self.c = ColumnMaker(self.name, False)
 
         # Makes spatial columns

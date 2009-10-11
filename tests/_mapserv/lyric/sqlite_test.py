@@ -26,5 +26,8 @@ class SqliteLyricTest(sqlite_test.SqliteTest):
             cursor.execute('SELECT COUNT(*) FROM test_tree WHERE id = ?', (row_id,))
             self.assertEqual(cursor.fetchone(), (1,))
 
+    def test_existing_table_names(self):
+        assert self.table_name in existing_table_names(self.conn)
+
 if __name__ == '__main__':
     unittest.main()

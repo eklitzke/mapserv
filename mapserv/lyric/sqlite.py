@@ -59,3 +59,16 @@ def insert(conn, row):
         row_id = cursor.lastrowid
         cursor.execute(spatial_insert, [row_id] + spatial_vals)
     return row_id
+
+def existing_table_names(conn):
+    with rotrans(conn) as cursor:
+        cursor.execute('SELECT name FROM sqlite_master '
+                       'WHERE type = ?'
+                       ' AND (name LIKE ? OR name LIKE ?) ',
+                       ('table', '%_data', '%_tree'))
+        rows = cursor.fetchall()
+    table_names = set()
+    for row in rows:
+        table_name, = row
+        table_names.add(table_name.split('_', 1)[0])
+    return list(table_names)
