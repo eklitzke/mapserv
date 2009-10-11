@@ -12,15 +12,24 @@ class MapservHandler(object):
 
     def __init__(self):
         self.conn = sqlite3.connect(':memory:')
-    
+
     def create(self, name, cols):
-        lyric.create(self.conn, name, cols)
+        lyric.sqlite.create(self.conn, name, cols)
+
+    def drop(self, name):
+        lyric.sqlite.drop(self.conn, name)
 
     def existing_tables(self):
-        return lyric.existing_table_names(self.conn)
+        return lyric.sqlite.existing_table_names(self.conn)
 
     def insert(self, row):
-        pass
+        return lyric.sqlite.insert(self.conn, row)
+
+    def select(self, query):
+        return lyric.sqlite.delete(self.conn, query)
+
+    def truncate(self, query):
+        return lyric.sqlite.delete(self.conn, query)
 
 def main(port):
     server = TServer.TSimpleServer(QueryService.Processor(MapservHandler()),

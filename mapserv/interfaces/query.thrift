@@ -104,7 +104,10 @@ struct Query {
 }
 
 service QueryService {
-  void create(1: string name, 2: list<CreateColumn> cols)
+  void         create(1: string name, 2: list<CreateColumn> cols)
+  void         drop(1: string name)
   list<string> existing_tables()
-  i64 insert(1: Row row)
+  i64          insert(1: Row row)
+  list<Row>    select(1: QueryClause query)
+  i64          truncate(1: QueryClause query) // "delete" is a thrift reserved keyword
 }

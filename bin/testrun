@@ -1,0 +1,27 @@
+#!/usr/bin/env python
+
+import random
+import string
+from mapserv.interfaces.query.ttypes import *
+import mapserv.client
+
+class TestRun(object):
+    def __init__(self):
+        self.client = mapserv.client.new_client()
+        self.table_name = 'test_' + ''.join(random.choice(string.letters) for x in range(8))
+
+    def create_table(self):
+        col_defs = [CreateColumn(name='timestamp', type=ColumnType.INTEGER),
+                    CreateColumn(name='latitude', type=ColumnType.SPATIAL),
+                    CreateColumn(name='longitude', type=ColumnType.SPATIAL)]
+        return self.client.create(self.table_name, col_defs)
+
+    def drop_table(self):
+        self.client.drop(self.table_name)
+
+    def run(self):
+        self.create_table()
+        self.drop_table()
+
+if __name__ == '__main__':
+    TestRun().run()

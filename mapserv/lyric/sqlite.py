@@ -40,28 +40,6 @@ class rotrans(SqliteContext):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.conn.rollback()
 
-def insert(conn, row):
-    """Insert a row into SQLite"""
-    data_names, data_vals = [], []
-    spatial_names, spatial_vals = [], []
-    for col, target in row.columns.iteritems():
-        val = make_val(target)
-        if col.spatial:
-            spatial_vals.extend([val, val])
-            spatial_names.extend(['%s_lo' % col.name, '%s_hi' % col.name])
-        else:
-            data_vals.append(val)
-            data_names.append(col.name)
-
-    data_insert = render_insert(row.table_name, data_names, False)
-    spatial_insert = render_insert(row.table_name, ['id'] + spatial_names, True)
-
-    with rwtrans(conn) as cursor:
-        cursor.execute(data_insert, data_vals)
-        row_id = cursor.lastrowid
-        cursor.execute(spatial_insert, [row_id] + spatial_vals)
-    return row_id
-
 def create(conn, name, columns):
 
     data_columns = ['id INTEGER PRIMARY KEY']
@@ -73,8 +51,8 @@ def create(conn, name, columns):
                 data_columns.append('%s %s' % (col.name, coltype))
                 break
         else:
-            assert col.type == ttypes.ColumnType.SPATIAL
-            spatial_columns.append(col.name)
+            assert col.type == ttypes.ColumnType.SPATIAL, 'Unknown column type: %r' % (col.type,)
+            spatial_columns.extend(['%s_lo' % col.name, '%s_hi' % col.name])
 
     with rwtrans(conn) as cursor:
         cursor.execute('CREATE TABLE %s_data (%s)' % (name, ', '.join(data_columns)))
@@ -107,4 +85,30 @@ def existing_table_names(conn):
         table_names.add(str(table_name.rsplit('_', 1)[0]))
     return list(table_names)
 
-__all__ = ['rwtrans', 'rotrans', 'create', 'drop', 'insert', 'existing_table_names']
+def insert(conn, row):
+    """Insert a row into SQLite"""
+    assert isinstance(ttypes.Row, row)
+    data_names, data_vals = [], []
+    spatial_names, spatial_vals = [], []
+    for col, target in row.columns.iteritems():
+        val = make_val(target)
+        if col.spatial:
+            spatial_vals.extend([val, val])
+            spatial_names.extend(['%s_lo' % col.name, '%s_hi' % col.name])
+        else:
+            data_vals.append(val)
+            data_names.append(col.name)
+
+    data_insert = render_insert(row.table_name, data_names, False)
+    spatial_insert = render_insert(row.table_name, ['id'] + spatial_names, True)
+
+    with rwtrans(conn) as cursor:
+        cursor.execute(data_insert, data_vals)
+        row_id = cursor.lastrowid
+        cursor.execute(spatial_insert, [row_id] + spatial_vals)
+    return row_id
+
+def select(conn, query):
+    pass
+
+__all__ = ['rwtrans', 'rotrans', 'create', 'drop', 'existing_table_names', 'insert', 'select']
