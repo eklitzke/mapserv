@@ -5,6 +5,7 @@ from thrift.transport import TSocket, TTransport
 from thrift.protocol import TBinaryProtocol
 from thrift.server import TServer
 from mapserv import lyric
+import mapserv.config
 from mapserv.interfaces.query import QueryService
 
 class MapservHandler(object):
@@ -21,7 +22,7 @@ class MapservHandler(object):
     def insert(self, row):
         pass
 
-def main(port=9090):
+def main(port):
     server = TServer.TSimpleServer(QueryService.Processor(MapservHandler()),
                                    TSocket.TServerSocket(port),
                                    TTransport.TBufferedTransportFactory(),
@@ -29,4 +30,5 @@ def main(port=9090):
     server.serve()
 
 if __name__ == '__main__':
-    main()
+    cfg = mapserv.config.load()
+    main(cfg['port'])
